@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  php-fpm:
+    build:
+      context: .
+    ports:
+      - "9000:9000"
+    volumes:
+      - shared_volume:/speedtest/
+      - html_volume:/var/www/html
+    command: php-fpm -F
+
+  apache:
+    image: php:7.4-apache
+    ports:
+      - "80:80"
+    volumes:
+      - shared_volume:/speedtest/
+      - html_volume:/var/www/html
+      - ./apache.conf:/etc/apache2/conf-available/apache.conf
+      - ./docker/servers.json:/servers.json
+
+volumes:
+  shared_volume:
+  html_volume:
+
