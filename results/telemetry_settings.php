@@ -15,11 +15,12 @@ $MySql_hostname="DB_HOSTNAME";
 $MySql_databasename="DB_NAME";
 
 // Postgresql settings
-$PostgreSql_username="USERNAME";
-$PostgreSql_password="PASSWORD";
-$PostgreSql_hostname="DB_HOSTNAME";
-$PostgreSql_databasename="DB_NAME";
+$PostgreSql_username="user";
+$PostgreSql_password="password1";
+$PostgreSql_hostname="localhost";
+$PostgreSql_databasename="mydb";
 
 
 //IMPORTANT: DO NOT ADD ANYTHING BELOW THIS PHP CLOSING TAG, NOT EVEN EMPTY LINES!
 ?>
+

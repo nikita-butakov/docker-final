@@ -20,8 +20,38 @@ services:
       - html_volume:/var/www/html
       - ./apache.conf:/etc/apache2/conf-available/apache.conf
       - ./docker/servers.json:/servers.json
+      - ./favicon.ico:/var/www/html/favicon.ico
+    command: ["bash", "-c", "mkdir -p /var/www/html/database/ && chown www-data /var/www/html/database/ && apache2-foreground"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apache.rule=Host(`147.45.50.15.nip.io`)"
+      - "traefik.http.services.apache.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.add-forwarded-host.headers.customrequestheaders.X-Forwarded-Host=${host}"
+
+  postgres:
+    image: postgres
+    container_name: my_postgres_container
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password1
+    ports:
+      - "5432:5432"
+    volumes:
+      - shared_volume:/speedtest/
+
+  traefik:
+    image: "traefik:v2.5"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
   shared_volume:
   html_volume:
-

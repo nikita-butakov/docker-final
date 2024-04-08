@@ -45,6 +45,7 @@ if [[ "$TELEMETRY" == "true" && ( "$MODE" == "frontend" || "$MODE" == "standalon
     sed -i s/\$redact_ip_addresses=.*\;/\$redact_ip_addresses=true\;/g /var/www/html/results/telemetry_settings.php
   fi
 
-  mkdir -p /database/
-  chown www-data /database/
+  mkdir -p /speedtest/database/
+  chown www-data /speedtest/database/
 fi
+
