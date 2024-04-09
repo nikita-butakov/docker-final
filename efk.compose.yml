@@ -1,0 +1,50 @@
+version: "3"
+services:
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    logging:
+        driver: "json-file"
+        options:
+            max-size: 10m
+            max-file: "5"
+    networks:
+      - elastic
+
+  elasticsearch:
+    image: elasticsearch:7.8.1
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+    environment:
+      - node.name=${node_name}
+      - cluster.name=${cluster_name}
+      - bootstrap.memory_lock=${bootstrap_memory_lock}
+      - cluster.initial_master_nodes=${cluster_initial_master_nodes}
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+
+  kibana:
+    image: kibana:7.8.1
+    links:
+      - "elasticsearch"
+    ports:
+      - 5601:5601
+    depends_on:
+      - fluentd
+    environment:
+      ELASTICSEARCH_URL: ${ELASTICSEARCH_URL}
+      ELASTICSEARCH_HOSTS: ${ELASTICSEARCH_HOSTS}
+      kibana_mem_xms: ${kibana_mem_xms}
+      kibana_mem_xmx: ${kibana_mem_xmx}
+    networks:
+      - elastic
+  
+networks:
+  elastic:

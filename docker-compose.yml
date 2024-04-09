@@ -21,12 +21,16 @@ services:
       - ./apache.conf:/etc/apache2/conf-available/apache.conf
       - ./docker/servers.json:/servers.json
       - ./favicon.ico:/var/www/html/favicon.ico
-    command: ["bash", "-c", "mkdir -p /var/www/html/database/ && chown www-data /var/www/html/database/ && apache2-foreground"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.apache.rule=Host(`147.45.50.15.nip.io`)"
       - "traefik.http.services.apache.loadbalancer.server.port=80"
       - "traefik.http.middlewares.add-forwarded-host.headers.customrequestheaders.X-Forwarded-Host=${host}"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: apache
 
   postgres:
     image: postgres
@@ -39,6 +43,12 @@ services:
       - "5432:5432"
     volumes:
       - shared_volume:/speedtest/
+      - db_volume:/var/lib/postgresql/data
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: postgres
 
   traefik:
     image: "traefik:v2.5"
@@ -51,7 +61,14 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: traefik
 
 volumes:
   shared_volume:
   html_volume:
+  db_volume:
+
